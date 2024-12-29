@@ -122,7 +122,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
             // Horizontal layout logic
             const depth = nodeDepths[nodeId] || 0;
             const siblings = nodes.get(node.parent || '')?.children.length || 1;
-             if (node.parent) {
+            if (node.parent) {
                 const parentNode = nodes.get(node.parent);
                 if (parentNode) {
                     const parentDepth = nodeDepths[node.parent] || 0;
@@ -151,6 +151,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     const parentX = nodePositions[node.parent]?.x || 0;
                     const parentY = nodePositions[node.parent]?.y || startY;
                     const childIndex = parentNode.children.indexOf(nodeId);
+                    console.log(childIndex);
                     x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing / 2;
                     y = parentY + ySpacing;
                 }
