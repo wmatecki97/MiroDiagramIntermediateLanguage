@@ -21,15 +21,30 @@ type DiagramOrientation = 'horizontal' | 'vertical' | 'tree';
 interface ProcessPseudoCodeOptions {
     orientation?: DiagramOrientation;
     startY?: number;
+    nodeWidth?: number;
+    nodeHeight?: number;
+    fontSize?: number;
+    textColor?: string;
+    fillColor?: string;
+    borderColor?: string;
 }
 
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
-    const { orientation = 'tree', startY = 100 } = options;
+    const {
+        orientation = 'tree',
+        startY = 100,
+        nodeWidth = 200,
+        nodeHeight = 100,
+        fontSize = 14,
+        textColor = '#000000',
+        fillColor = '#ffffff',
+        borderColor = '#008080',
+    } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
     const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string }>();
     const connections: { from: string, to: string }[] = [];
-    const xSpacing = 300;
-    const ySpacing = 200;
+    const xSpacing = nodeWidth * 1.5;
+    const ySpacing = nodeHeight * 1.5;
     let currentY = startY;
 
     // Parse nodes and connections
@@ -68,6 +83,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
     let maxDepth = 0;
     const nodeDepths: { [key: string]: number } = {};
+    const nodePositions: { [key: string]: { x: number, y: number } } = {};
 
     const calculateTreeLayout = (nodeId: string, depth: number) => {
         if (nodeDepths[nodeId] !== undefined) {
@@ -117,8 +133,8 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                 const parentNode = nodes.get(node.parent);
                 if (parentNode) {
                     const parentDepth = nodeDepths[node.parent] || 0;
-                    const parentX = parentDepth * xSpacing;
-                    const parentY = startY + parentDepth * ySpacing;
+                    const parentX = nodePositions[node.parent]?.x || 0;
+                    const parentY = nodePositions[node.parent]?.y || startY;
                     const childIndex = parentNode.children.indexOf(nodeId);
                     x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing / 2;
                     y = parentY + ySpacing;
@@ -126,22 +142,24 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
             }
         }
 
+        nodePositions[nodeId] = { x, y };
+
         const shape = await miro.board.createShape({
             shape: 'round_rectangle',
             content: node.content,
             x: x,
             y: y,
-            width: 200,
-            height: 100,
+            width: nodeWidth,
+            height: nodeHeight,
             style: {
-                color: '#000000',
-                fillColor: '#ffffff',
+                color: textColor,
+                fillColor: fillColor,
                 fillOpacity: 1,
-                fontSize: 14,
+                fontSize: fontSize,
                 textAlign: 'center',
                 textAlignVertical: 'middle',
                 borderOpacity: 1,
-                borderColor: '#008080',
+                borderColor: borderColor,
                 borderWidth: 2,
             }
         });
