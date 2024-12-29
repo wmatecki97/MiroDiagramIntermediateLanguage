@@ -33,7 +33,7 @@ const App: React.FC = () => {
         <p>
           Enter pseudo-code to generate a diagram. Use the following syntax:
           <br />
-          <code>Node:&lt;NodeID&gt;:&quot;&lt;TextContent&gt;&quot;[:&lt;ShapeType&gt;][:&lt;Color&gt;][:&lt;FillColor&gt;]</code> to create a node.
+          <code>Node:&lt;NodeID&gt;[&lt;shape=ShapeType,backgroundColor=Color,borderColor=Color&gt;]:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
           <br />
           <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
             <br />
@@ -43,7 +43,7 @@ const App: React.FC = () => {
           <br />
           <code>Node:1:"Start"</code>
           <br />
-            <code>Node:2:"End":rectangle:#0000FF:#00FF00</code>
+            <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF&gt;:"End"</code>
           <br />
           <code>Connect:1:2</code>
         </p>

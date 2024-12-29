@@ -56,10 +56,29 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
     // Parse nodes and connections
     for (const line of lines) {
-        const nodeMatch = line.match(/^Node:(\d+):"(.+)"(?:[:]([a-zA-Z_]+))?(?:[:](#[0-9a-fA-F]+))?(?:[:](#[0-9a-fA-F]+))?$/);
+        const nodeMatch = line.match(/^Node:(\d+)(?:<([^>]+)>)?:\"(.+)\"$/);
         if (nodeMatch) {
-            const [, id, content, shapeType, color, nodeFillColor] = nodeMatch;
-            nodes.set(id, { id, content, children: [], parent: null, shape: (shapeType || shape) as ShapeType, color: color || textColor, fillColor: nodeFillColor || fillColor });
+            const [, id, styleString, content] = nodeMatch;
+            let nodeShape = shape;
+            let nodeColor = textColor;
+            let nodeFillColor = fillColor;
+
+            if (styleString) {
+                const styleRegex = /(\w+)=([^,]+)/g;
+                let match;
+                while ((match = styleRegex.exec(styleString)) !== null) {
+                    const key = match[1];
+                    const value = match[2];
+                    if (key === 'shape') {
+                        nodeShape = value as ShapeType;
+                    } else if (key === 'borderColor') {
+                        nodeColor = value;
+                    } else if (key === 'backgroundColor') {
+                        nodeFillColor = value;
+                    }
+                }
+            }
+            nodes.set(id, { id, content, children: [], parent: null, shape: nodeShape, color: nodeColor, fillColor: nodeFillColor });
         }
         const connectMatch = line.match(/^Connect:(\d+):(\d+)$/);
         if (connectMatch) {
