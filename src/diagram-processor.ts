@@ -21,6 +21,7 @@ type ShapeType = "circle" | "triangle" | "rectangle" | "wedge_round_rectangle_ca
 
 interface ProcessPseudoCodeOptions {
     orientation?: DiagramOrientation;
+    startX?: number;
     startY?: number;
     nodeWidth?: number;
     nodeHeight?: number;
@@ -40,6 +41,7 @@ interface ProcessPseudoCodeOptions {
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions) {
     const {
         orientation = 'tree',
+        startX = 0,
         startY = 100,
         nodeWidth = 200,
         nodeHeight = 100,
@@ -159,14 +161,14 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         visitedNodes.add(nodeId);
 
         const node = nodes.get(nodeId)!;
-        let x = 0;
+        let x = startX;
         let y = currentY;
 
         if (orientation === 'horizontal') {
             // Horizontal layout logic
             const depth = nodeDepths[nodeId] || 0;
             
-            x = horizontalIndex * (nodeWidth + xSpacing);
+            x = startX + horizontalIndex * (nodeWidth + xSpacing);
             y = currentY + (depth * ySpacing);
             horizontalIndex++;
             horizontalMaxX = Math.max(horizontalMaxX, x + nodeWidth);
@@ -177,7 +179,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         } else if (orientation === 'tree') {
             const depth = nodeDepths[nodeId] || 0;
             const siblings = nodes.get(node.parent || '')?.children.length || 1;
-            x = depth * xSpacing;
+            x = startX + depth * xSpacing;
             y = startY + depth * ySpacing;
             if (node.parent) {
                 const parentNode = nodes.get(node.parent);

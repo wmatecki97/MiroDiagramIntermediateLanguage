@@ -30,11 +30,12 @@ const App: React.FC = () => {
                 startY = maxY;
             } else {
                 startX = minX;
-                startY = maxY;
+                startY = maxX;
             }
         }
 
         await processPseudoCode(pseudoCode, {
+            startX: startX,
             startY: startY,
             orientation: orientation,
             nodeWidth: nodeWidth,
