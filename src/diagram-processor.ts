@@ -109,6 +109,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
     }
 
     // Process nodes in breadth-first order
+    let horizontalIndex = 0;
     while (queue.length > 0) {
         const nodeId = queue.shift()!;
         if (visitedNodes.has(nodeId)) continue;
@@ -121,27 +122,11 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         if (orientation === 'horizontal') {
             // Horizontal layout logic
             const depth = nodeDepths[nodeId] || 0;
-            const siblings = nodes.get(node.parent || '')?.children.length || 1;
-            if (node.parent) {
-                const parentNode = nodes.get(node.parent);
-                if (parentNode) {
-                    const parentDepth = nodeDepths[node.parent] || 0;
-                    const parentX = nodePositions[node.parent]?.x || 0;
-                    const parentY = nodePositions[node.parent]?.y || startY;
-                    let childIndex = 0;
-                    for (let i = 0; i < parentNode.children.length; i++) {
-                        if (parentNode.children[i] === nodeId) {
-                            childIndex = i;
-                            break;
-                        }
-                    }
-                    x = parentX + (childIndex * (nodeWidth + xSpacing));
-                    y = parentY + (depth * ySpacing); // Adjusted y position for horizontal layout
-                }
-            } else {
-                x = depth * (nodeWidth + xSpacing);
-                y = currentY + (depth * ySpacing); // Adjusted y position for root nodes in horizontal layout
-            }
+            
+            x = horizontalIndex * (nodeWidth + xSpacing);
+            y = currentY + (depth * ySpacing);
+            horizontalIndex++;
+
         } else if (orientation === 'vertical') {
             // Vertical layout logic
             y = currentY + (visitedNodes.size - 1) * ySpacing;
