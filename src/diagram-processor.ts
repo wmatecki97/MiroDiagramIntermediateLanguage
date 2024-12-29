@@ -48,7 +48,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         shape = 'round_rectangle',
     } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
-    const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string, shape: ShapeType, color: string, fillColor: string }>();
+    const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string, shape: ShapeType, color: string, fillColor: string, textColor: string }>();
     const connections: { from: string, to: string }[] = [];
     const xSpacing = nodeWidth * horizontalSpacing;
     const ySpacing = nodeHeight * verticalSpacing;
@@ -60,8 +60,9 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         if (nodeMatch) {
             const [, id, styleString, content] = nodeMatch;
             let nodeShape = shape;
-            let nodeColor = textColor;
+            let nodeBorderColor = borderColor;
             let nodeFillColor = fillColor;
+            let nodeTextColor = textColor;
 
             if (styleString) {
                 const styleRegex = /(\w+)=([^,]+)/g;
@@ -72,13 +73,15 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     if (key === 'shape') {
                         nodeShape = value as ShapeType;
                     } else if (key === 'borderColor') {
-                        nodeColor = value;
+                        nodeBorderColor = value;
                     } else if (key === 'backgroundColor') {
                         nodeFillColor = value;
+                    } else if (key === 'textColor') {
+                        nodeTextColor = value;
                     }
                 }
             }
-            nodes.set(id, { id, content, children: [], parent: null, shape: nodeShape, color: nodeColor, fillColor: nodeFillColor });
+            nodes.set(id, { id, content, children: [], parent: null, shape: nodeShape, color: nodeBorderColor, fillColor: nodeFillColor, textColor: nodeTextColor });
         }
         const connectMatch = line.match(/^Connect:(\d+):(\d+)$/);
         if (connectMatch) {
@@ -190,14 +193,14 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
             width: nodeWidth,
             height: nodeHeight,
             style: {
-                color: node.color,
+                color: node.textColor,
                 fillColor: node.fillColor,
                 fillOpacity: 1,
                 fontSize: fontSize,
                 textAlign: 'center',
                 textAlignVertical: 'middle',
                 borderOpacity: 1,
-                borderColor: borderColor,
+                borderColor: node.color,
                 borderWidth: 2,
             }
         });

@@ -9,7 +9,8 @@ const App: React.FC = () => {
   const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('tree');
   const [nodeWidth, setNodeWidth] = React.useState(200);
   const [nodeHeight, setNodeHeight] = React.useState(100);
-  const [nodeColor, setNodeColor] = React.useState('#008080');
+  const [borderColor, setBorderColor] = React.useState('#008080');
+  const [textColor, setTextColor] = React.useState('#000000');
   const [horizontalSpacing, setHorizontalSpacing] = React.useState(0.5);
   const [verticalSpacing, setVerticalSpacing] = React.useState(1.5);
 
@@ -19,9 +20,10 @@ const App: React.FC = () => {
       orientation: orientation,
       nodeWidth: nodeWidth,
       nodeHeight: nodeHeight,
-      borderColor: nodeColor,
+      borderColor: borderColor,
       horizontalSpacing: horizontalSpacing,
       verticalSpacing: verticalSpacing,
+      textColor: textColor,
     });
     setDiagramYOffset(diagramYOffset + yOffset);
   };
@@ -33,7 +35,7 @@ const App: React.FC = () => {
         <p>
           Enter pseudo-code to generate a diagram. Use the following syntax:
           <br />
-          <code>Node:&lt;NodeID&gt;[&lt;shape=ShapeType,backgroundColor=Color,borderColor=Color&gt;]:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
+          <code>Node:&lt;NodeID&gt;[&lt;shape=ShapeType,backgroundColor=Color,borderColor=Color,textColor=Color&gt;]:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
           <br />
           <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
             <br />
@@ -43,7 +45,7 @@ const App: React.FC = () => {
           <br />
           <code>Node:1:"Start"</code>
           <br />
-            <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF&gt;:"End"</code>
+            <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"</code>
           <br />
           <code>Connect:1:2</code>
         </p>
@@ -82,12 +84,22 @@ const App: React.FC = () => {
             />
           </div>
           <div style={{ marginBottom: '5px' }}>
-            <label htmlFor="nodeColor">Node Color:</label>
+            <label htmlFor="borderColor">Border Color:</label>
             <input
               type="color"
-              id="nodeColor"
-              value={nodeColor}
-              onChange={(e) => setNodeColor(e.target.value)}
+              id="borderColor"
+              value={borderColor}
+              onChange={(e) => setBorderColor(e.target.value)}
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ marginBottom: '5px' }}>
+            <label htmlFor="textColor">Text Color:</label>
+             <input
+              type="color"
+              id="textColor"
+              value={textColor}
+              onChange={(e) => setTextColor(e.target.value)}
               style={{ display: 'block' }}
             />
           </div>
