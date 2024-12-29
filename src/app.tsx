@@ -39,6 +39,8 @@ const App: React.FC = () => {
           <br />
           Shape types: <code>circle</code>, <code>triangle</code>, <code>rectangle</code>, <code>wedge_round_rectangle_callout</code>, <code>round_rectangle</code>, <code>rhombus</code>, <code>parallelogram</code>, <code>star</code>, <code>right_arrow</code>, <code>left_arrow</code>, <code>pentagon</code>, <code>hexagon</code>, <code>octagon</code>, <code>trapezoid</code>, <code>flow_chart_predefined_process</code>, <code>left_right_arrow</code>, <code>cloud</code>, <code>left_brace</code>, <code>right_brace</code>, <code>cross</code>, <code>can</code>
           <br />
+          Colors must be in the format #000000.
+          <br />
           For example:
           <br />
           <code>Node:1:"Start"</code>
