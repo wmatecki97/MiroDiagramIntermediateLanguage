@@ -43,7 +43,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
     const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string }>();
     const connections: { from: string, to: string }[] = [];
-    const xSpacing = nodeWidth * 1.5;
+    const xSpacing = nodeWidth * 2.5;
     const ySpacing = nodeHeight * 1.5;
     let currentY = startY;
 
