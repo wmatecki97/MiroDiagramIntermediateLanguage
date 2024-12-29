@@ -129,11 +129,11 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     const parentX = nodePositions[node.parent]?.x || 0;
                     const parentY = nodePositions[node.parent]?.y || startY;
                     const childIndex = parentNode.children.indexOf(nodeId);
-                    x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing;
+                    x = parentX + (childIndex * (nodeWidth + xSpacing));
                     y = parentY + (depth * ySpacing); // Adjusted y position for horizontal layout
                 }
             } else {
-                x = depth * xSpacing;
+                x = depth * (nodeWidth + xSpacing);
                 y = currentY + (depth * ySpacing); // Adjusted y position for root nodes in horizontal layout
             }
         } else if (orientation === 'vertical') {
