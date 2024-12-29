@@ -45,8 +45,8 @@ const App: React.FC = () => {
           <br />
           <code>Connect:1:2</code>
         </p>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', marginBottom: '10px' }}>
-              <div>
+          <div style={{  marginBottom: '10px' }}>
+              <div style={{ marginBottom: '5px' }}>
                   <label htmlFor="orientation">Diagram Orientation:</label>
                   <select
                       id="orientation"
@@ -59,7 +59,7 @@ const App: React.FC = () => {
                       <option value="tree">Tree</option>
                   </select>
               </div>
-              <div>
+              <div style={{ marginBottom: '5px' }}>
                   <label htmlFor="nodeWidth">Node Width:</label>
                   <input
                       type="number"
@@ -69,7 +69,7 @@ const App: React.FC = () => {
                       style={{ display: 'block' }}
                   />
               </div>
-              <div>
+              <div style={{ marginBottom: '5px' }}>
                   <label htmlFor="nodeHeight">Node Height:</label>
                   <input
                       type="number"
@@ -79,7 +79,7 @@ const App: React.FC = () => {
                       style={{ display: 'block' }}
                   />
               </div>
-              <div>
+              <div style={{ marginBottom: '5px' }}>
                   <label htmlFor="nodeColor">Node Color:</label>
                   <input
                       type="color"
@@ -89,7 +89,7 @@ const App: React.FC = () => {
                       style={{ display: 'block' }}
                   />
               </div>
-              <div>
+              <div style={{ marginBottom: '5px' }}>
                   <label htmlFor="horizontalSpacing">Horizontal Spacing:</label>
                   <input
                       type="number"
@@ -99,7 +99,7 @@ const App: React.FC = () => {
                       style={{ display: 'block' }}
                   />
               </div>
-                <div>
+                <div style={{ marginBottom: '5px' }}>
                     <label htmlFor="verticalSpacing">Vertical Spacing:</label>
                     <input
                         type="number"
