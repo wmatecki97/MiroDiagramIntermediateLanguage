@@ -6,7 +6,7 @@ import { processPseudoCode } from './diagram-processor';
 const App: React.FC = () => {
   const [pseudoCode, setPseudoCode] = React.useState('');
   const [diagramYOffset, setDiagramYOffset] = React.useState(0);
-  const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('horizontal');
+  const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('tree');
 
   const handleGenerate = async () => {
     const yOffset = await processPseudoCode(pseudoCode, { startY: 100 + diagramYOffset, orientation: orientation });

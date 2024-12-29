@@ -24,17 +24,51 @@ interface ProcessPseudoCodeOptions {
 }
 
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
-    const { orientation = 'horizontal', startY = 100 } = options;
+    const { orientation = 'tree', startY = 100 } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
-    const nodes: { [key: string]: string } = {};
-    let currentX = 0;
-    let currentY = startY;
+    const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string }>();
+    const connections: { from: string, to: string }[] = [];
     const xSpacing = 300;
     const ySpacing = 200;
+    let currentY = startY;
+
+    // Parse nodes and connections
+    for (const line of lines) {
+        const nodeMatch = line.match(/^Node:(\d+):"(.+)"$/);
+        if (nodeMatch) {
+            const [, id, content] = nodeMatch;
+            nodes.set(id, { id, content, children: [], parent: null });
+        }
+        const connectMatch = line.match(/^Connect:(\d+):(\d+)$/);
+        if (connectMatch) {
+            const [, from, to] = connectMatch;
+            connections.push({ from, to });
+        }
+    }
+
+    // Build the tree structure
+    for (const { from, to } of connections) {
+        const fromNode = nodes.get(from);
+        const toNode = nodes.get(to);
+        if (fromNode && toNode) {
+            fromNode.children.push(to);
+            toNode.parent = from;
+        }
+    }
+
+    const visitedNodes = new Set<string>();
+    const queue: string[] = [];
+
+    // Find root nodes (nodes without parents)
+    for (const [id, node] of nodes) {
+        if (!node.parent) {
+            queue.push(id);
+        }
+    }
+
     let maxDepth = 0;
     const nodeDepths: { [key: string]: number } = {};
 
-    // Helper function to calculate tree layout
     const calculateTreeLayout = (nodeId: string, depth: number) => {
         if (nodeDepths[nodeId] !== undefined) {
             return;
@@ -42,97 +76,101 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         nodeDepths[nodeId] = depth;
         maxDepth = Math.max(maxDepth, depth);
 
-        for (const line of lines) {
-            const connectMatch = line.match(/^Connect:(\d+):(\d+)$/);
-            if (connectMatch && connectMatch[1] === nodeId) {
-                calculateTreeLayout(connectMatch[2], depth + 1);
+        const node = nodes.get(nodeId);
+        if (node) {
+            for (const childId of node.children) {
+                calculateTreeLayout(childId, depth + 1);
             }
         }
     };
 
-    // First pass to calculate tree depths if tree orientation is selected
     if (orientation === 'tree') {
-        for (const line of lines) {
-            const nodeMatch = line.match(/^Node:(\d+):"(.+)"$/);
-            if (nodeMatch) {
-                calculateTreeLayout(nodeMatch[1], 0);
+        for (const [id, node] of nodes) {
+            if (!node.parent) {
+                calculateTreeLayout(id, 0);
             }
         }
     }
 
-    // Process each line
-    for (const line of lines) {
-        try {
-            if (line.startsWith('Node:')) {
-                const match = line.match(/^Node:(\d+):"(.+)"$/);
-                if (match) {
-                    const [, id, content] = match;
-                    let x = currentX;
-                    let y = currentY;
+    // Process nodes in breadth-first order
+    while (queue.length > 0) {
+        const nodeId = queue.shift()!;
+        if (visitedNodes.has(nodeId)) continue;
+        visitedNodes.add(nodeId);
 
-                    if (orientation === 'horizontal') {
-                        x = currentX;
-                    } else if (orientation === 'vertical') {
-                        y = currentY;
-                    } else if (orientation === 'tree') {
-                        const depth = nodeDepths[id] || 0;
-                        x = depth * xSpacing;
-                        y = startY + depth * ySpacing;
-                    }
+        const node = nodes.get(nodeId)!;
+        let x = 0;
+        let y = currentY;
 
-                    const shape = await miro.board.createShape({
-                        shape: 'round_rectangle',
-                        content: content,
-                        x: x,
-                        y: y,
-                        width: 200,
-                        height: 100,
-                        style: {
-                            color: '#000000',
-                            fillColor: '#ffffff',
-                            fillOpacity: 1,
-                            fontSize: 14,
-                            textAlign: 'center',
-                            textAlignVertical: 'middle',
-                            borderOpacity: 1,
-                            borderColor: '#008080',
-                            borderWidth: 2,
-                        }
-                    });
-                    nodes[id] = shape.id;
-                    if (orientation === 'horizontal') {
-                        currentX += xSpacing;
-                    } else if (orientation === 'vertical') {
-                        currentY += ySpacing;
-                    }
-                } else {
-                    console.error(`Invalid Node syntax: ${line}`);
-                }
-            } else if (line.startsWith('Connect:')) {
-                const match = line.match(/^Connect:(\d+):(\d+)$/);
-                if (match) {
-                    const [, from, to] = match;
-                    if (nodes[from] && nodes[to]) {
-                        await miro.board.createConnector({
-                            start: { item: nodes[from] },
-                            end: { item: nodes[to] },
-                            style: {
-                                strokeColor: '#000000',
-                                strokeWidth: 2,
-                            },
-                        });
-                    } else {
-                        console.error(`Missing nodes for connection: ${line}`);
-                    }
-                } else {
-                    console.error(`Invalid Connect syntax: ${line}`);
+        if (orientation === 'horizontal') {
+            // Horizontal layout logic
+            x = visitedNodes.size * xSpacing;
+        } else if (orientation === 'vertical') {
+            // Vertical layout logic
+            y = currentY + (visitedNodes.size - 1) * ySpacing;
+        } else if (orientation === 'tree') {
+            const depth = nodeDepths[nodeId] || 0;
+            const siblings = nodes.get(node.parent || '')?.children.length || 1;
+            x = depth * xSpacing;
+            y = startY + depth * ySpacing;
+            if (node.parent) {
+                const parentNode = nodes.get(node.parent);
+                if (parentNode) {
+                    const parentDepth = nodeDepths[node.parent] || 0;
+                    const parentX = parentDepth * xSpacing;
+                    const parentY = startY + parentDepth * ySpacing;
+                    const childIndex = parentNode.children.indexOf(nodeId);
+                    x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing / 2;
+                    y = parentY + ySpacing;
                 }
             }
-        } catch (error) {
-            console.error(`Error processing line: ${line}`, error);
+        }
+
+        const shape = await miro.board.createShape({
+            shape: 'round_rectangle',
+            content: node.content,
+            x: x,
+            y: y,
+            width: 200,
+            height: 100,
+            style: {
+                color: '#000000',
+                fillColor: '#ffffff',
+                fillOpacity: 1,
+                fontSize: 14,
+                textAlign: 'center',
+                textAlignVertical: 'middle',
+                borderOpacity: 1,
+                borderColor: '#008080',
+                borderWidth: 2,
+            }
+        });
+        node.shapeId = shape.id;
+
+        // Add children to the queue
+        for (const childId of node.children) {
+            if (!visitedNodes.has(childId)) {
+                queue.push(childId);
+            }
         }
     }
 
-    console.log('Nodes created:', nodes);
-    return (orientation === 'tree' ? (maxDepth + 1) * ySpacing : (orientation === 'vertical' ? currentY - startY + ySpacing : 0));
+    // Create connections
+    for (const { from, to } of connections) {
+        const fromNode = nodes.get(from);
+        const toNode = nodes.get(to);
+        if (fromNode?.shapeId && toNode?.shapeId) {
+            await miro.board.createConnector({
+                start: { item: fromNode.shapeId },
+                end: { item: toNode.shapeId },
+                style: {
+                    strokeColor: '#000000',
+                    strokeWidth: 2,
+                },
+            });
+        }
+    }
+
+    currentY = (orientation === 'tree' ? (maxDepth + 1) * ySpacing : (orientation === 'vertical' ? currentY - startY + ySpacing : 0));
+    return currentY;
 }
