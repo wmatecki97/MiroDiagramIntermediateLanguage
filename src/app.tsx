@@ -25,6 +25,12 @@ async function processPseudoCode(input: string) {
             y: startY,
             width: 200,
             height: 100,
+            style: {
+              fillColor: '#ffffff',
+              borderColor: '#008080',
+              borderWidth: 2,
+              borderRadius: 10,
+            }
           });
           nodes[id] = shape.id; // Store the ID of the created shape
           currentX += xSpacing; // Move to the right for the next node
