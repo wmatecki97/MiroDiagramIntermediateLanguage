@@ -1,101 +1,16 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Shape } from '@mirohq/websdk-types/stable/features/widgets/shape';
 import '../src/assets/style.css';
-
-// Define the ShapeStyle type
-type ShapeStyle = {
-  color: string;
-  fillColor: string;
-  fillOpacity: number;
-  fontFamily: string;
-  fontSize: number;
-  textAlign: string;
-  textAlignVertical: string;
-  borderStyle: string;
-  borderOpacity: number;
-  borderColor: string;
-  borderWidth: number;
-  borderRadius?: number;
-};
-
-
-async function processPseudoCode(input: string) {
-  const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
-  const nodes: { [key: string]: string } = {};
-
-  let currentX = 0; // Starting X position
-  const startY = 100; // Starting Y position
-  const xSpacing = 300; // Horizontal spacing between nodes
-
-  // Process each line
-  for (const line of lines) {
-    try {
-      if (line.startsWith('Node:')) {
-        // Match the Node syntax: Node:<NodeID>:"<TextContent>"
-        const match = line.match(/^Node:(\d+):"(.+)"$/);
-        if (match) {
-          const [, id, content] = match;
-          const shape = await miro.board.createShape({
-            shape: 'round_rectangle',
-            content: content,
-            x: currentX,
-            y: startY,
-            width: 200,
-            height: 100,
-            style: {
-              color: '#000000', // Default text color
-              fillColor: '#ffffff',
-              fillOpacity: 1,
-              fontSize: 14,
-              textAlign: 'center',
-              textAlignVertical: 'middle',
-              borderOpacity: 1,
-              borderColor: '#008080',
-              borderWidth: 2,
-            }
-          });
-          nodes[id] = shape.id; // Store the ID of the created shape
-          currentX += xSpacing; // Move to the right for the next node
-        } else {
-          console.error(`Invalid Node syntax: ${line}`);
-        }
-      } else if (line.startsWith('Connect:')) {
-        // Match the Connect syntax: Connect:<FromNodeID>:<ToNodeID>
-        const match = line.match(/^Connect:(\d+):(\d+)$/);
-        if (match) {
-          const [, from, to] = match;
-          if (nodes[from] && nodes[to]) {
-            await miro.board.createConnector({
-              start: { item: nodes[from] },
-              end: { item: nodes[to] },
-              style: {
-                strokeColor: '#000000',
-                strokeWidth: 2,
-              },
-            });
-          } else {
-            console.error(`Missing nodes for connection: ${line}`);
-          }
-        } else {
-          console.error(`Invalid Connect syntax: ${line}`);
-        }
-      }
-    } catch (error) {
-      console.error(`Error processing line: ${line}`, error);
-    }
-  }
-
-  console.log('Nodes created:', nodes);
-}
-
-
+import { processPseudoCode } from './diagram-processor';
 
 const App: React.FC = () => {
   const [pseudoCode, setPseudoCode] = React.useState('');
+  const [diagramYOffset, setDiagramYOffset] = React.useState(0);
+  const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('horizontal');
 
-  const handleGenerate = () => {
-    processPseudoCode(pseudoCode);
+  const handleGenerate = async () => {
+    const yOffset = await processPseudoCode(pseudoCode, { startY: 100 + diagramYOffset, orientation: orientation });
+    setDiagramYOffset(diagramYOffset + yOffset);
   };
 
   return (
@@ -117,6 +32,17 @@ const App: React.FC = () => {
           <br />
           <code>Connect:1:2</code>
         </p>
+        <label htmlFor="orientation">Diagram Orientation:</label>
+        <select
+          id="orientation"
+          value={orientation}
+          onChange={(e) => setOrientation(e.target.value as 'horizontal' | 'vertical' | 'tree')}
+          style={{ marginBottom: '10px', display: 'block' }}
+        >
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+          <option value="tree">Tree</option>
+        </select>
         <textarea
           placeholder="Enter pseudo-code here"
           value={pseudoCode}
