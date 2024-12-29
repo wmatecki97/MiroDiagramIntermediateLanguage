@@ -151,6 +151,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
     let maxX = -Infinity;
     let minY = Infinity;
     let maxY = -Infinity;
+    let horizontalMaxX = -Infinity;
 
     while (queue.length > 0) {
         const nodeId = queue.shift()!;
@@ -168,6 +169,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
             x = horizontalIndex * (nodeWidth + xSpacing);
             y = currentY + (depth * ySpacing);
             horizontalIndex++;
+            horizontalMaxX = Math.max(horizontalMaxX, x + nodeWidth);
 
         } else if (orientation === 'vertical') {
             // Vertical layout logic
@@ -251,7 +253,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
     
     const bounds: DiagramBounds = {
         minX: minX === Infinity ? 0 : minX,
-        maxX: maxX === -Infinity ? 0 : maxX,
+        maxX: orientation === 'horizontal' ? horizontalMaxX : maxX === -Infinity ? 0 : maxX,
         minY: minY === Infinity ? 0 : minY,
         maxY: maxY === -Infinity ? 0 : maxY,
     };
