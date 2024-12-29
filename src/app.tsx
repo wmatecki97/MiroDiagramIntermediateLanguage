@@ -95,9 +95,16 @@ const App: React.FC = () => {
 
         <div className="example">
           <p>Here's an example demonstrating node and connection creation:</p>
-          <pre><code>Node:1&lt;shape=circle, backgroundColor=#00FF00,&gt;:"Start"<br />
-            Node:2:&lt;shape=rectangle, borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"<br />
-            Connect:1:2</code></pre>
+          <pre><code>
+            Node:1&lt;shape=circle&gt;:"Start"
+            <br />
+            Node:2&lt;shape=rectangle&gt;:"User Query Received"
+            <br />
+            Node:3&lt;shape=rectangle,backgroundColor=#00FF00&gt;:"Multiple Attributes"
+            <br />
+            Connect:1:2
+            <br />
+            Connect:2:3</code></pre>
         </div>
 
 
