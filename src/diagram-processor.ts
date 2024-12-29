@@ -130,10 +130,11 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     const parentY = nodePositions[node.parent]?.y || startY;
                     const childIndex = parentNode.children.indexOf(nodeId);
                     x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing;
-                    y = parentY;
+                    y = parentY + (depth * ySpacing); // Adjusted y position for horizontal layout
                 }
             } else {
                 x = depth * xSpacing;
+                y = currentY + (depth * ySpacing); // Adjusted y position for root nodes in horizontal layout
             }
         } else if (orientation === 'vertical') {
             // Vertical layout logic
