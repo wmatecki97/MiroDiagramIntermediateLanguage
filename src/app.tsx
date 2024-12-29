@@ -33,15 +33,17 @@ const App: React.FC = () => {
         <p>
           Enter pseudo-code to generate a diagram. Use the following syntax:
           <br />
-          <code>Node:&lt;NodeID&gt;:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
+          <code>Node:&lt;NodeID&gt;:&quot;&lt;TextContent&gt;&quot;[:&lt;ShapeType&gt;][:&lt;Color&gt;][:&lt;FillColor&gt;]</code> to create a node.
           <br />
           <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
+            <br />
+            Shape types: <code>circle</code>, <code>triangle</code>, <code>rectangle</code>, <code>wedge_round_rectangle_callout</code>, <code>round_rectangle</code>, <code>rhombus</code>, <code>parallelogram</code>, <code>star</code>, <code>right_arrow</code>, <code>left_arrow</code>, <code>pentagon</code>, <code>hexagon</code>, <code>octagon</code>, <code>trapezoid</code>, <code>flow_chart_predefined_process</code>, <code>left_right_arrow</code>, <code>cloud</code>, <code>left_brace</code>, <code>right_brace</code>, <code>cross</code>, <code>can</code>
           <br />
           For example:
           <br />
           <code>Node:1:"Start"</code>
           <br />
-          <code>Node:2:"End"</code>
+            <code>Node:2:"End":rectangle:#0000FF:#00FF00</code>
           <br />
           <code>Connect:1:2</code>
         </p>

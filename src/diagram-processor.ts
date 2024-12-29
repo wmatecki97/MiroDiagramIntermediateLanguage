@@ -17,6 +17,7 @@ type ShapeStyle = {
 };
 
 type DiagramOrientation = 'horizontal' | 'vertical' | 'tree';
+type ShapeType = "circle" | "triangle" | "rectangle" | "wedge_round_rectangle_callout" | "round_rectangle" | "rhombus" | "parallelogram" | "star" | "right_arrow" | "left_arrow" | "pentagon" | "hexagon" | "octagon" | "trapezoid" | "flow_chart_predefined_process" | "left_right_arrow" | "cloud" | "left_brace" | "right_brace" | "cross" | "can" | "round_rectangle";
 
 interface ProcessPseudoCodeOptions {
     orientation?: DiagramOrientation;
@@ -29,6 +30,7 @@ interface ProcessPseudoCodeOptions {
     borderColor?: string;
     horizontalSpacing?: number;
     verticalSpacing?: number;
+    shape?: ShapeType;
 }
 
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
@@ -43,9 +45,10 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         borderColor = '#008080',
         horizontalSpacing = 2.5,
         verticalSpacing = 1.5,
+        shape = 'round_rectangle',
     } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
-    const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string }>();
+    const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string, shape: ShapeType, color: string, fillColor: string }>();
     const connections: { from: string, to: string }[] = [];
     const xSpacing = nodeWidth * horizontalSpacing;
     const ySpacing = nodeHeight * verticalSpacing;
@@ -53,10 +56,10 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
     // Parse nodes and connections
     for (const line of lines) {
-        const nodeMatch = line.match(/^Node:(\d+):"(.+)"$/);
+        const nodeMatch = line.match(/^Node:(\d+):"(.+)"(?:[:]([a-zA-Z_]+))?(?:[:](#[0-9a-fA-F]+))?(?:[:](#[0-9a-fA-F]+))?$/);
         if (nodeMatch) {
-            const [, id, content] = nodeMatch;
-            nodes.set(id, { id, content, children: [], parent: null });
+            const [, id, content, shapeType, color, nodeFillColor] = nodeMatch;
+            nodes.set(id, { id, content, children: [], parent: null, shape: (shapeType || shape) as ShapeType, color: color || textColor, fillColor: nodeFillColor || fillColor });
         }
         const connectMatch = line.match(/^Connect:(\d+):(\d+)$/);
         if (connectMatch) {
@@ -160,16 +163,16 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
         nodePositions[nodeId] = { x, y };
 
-        const shape = await miro.board.createShape({
-            shape: 'round_rectangle',
+        const shapeWidget = await miro.board.createShape({
+            shape: node.shape,
             content: node.content,
             x: x,
             y: y,
             width: nodeWidth,
             height: nodeHeight,
             style: {
-                color: textColor,
-                fillColor: fillColor,
+                color: node.color,
+                fillColor: node.fillColor,
                 fillOpacity: 1,
                 fontSize: fontSize,
                 textAlign: 'center',
@@ -179,7 +182,7 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                 borderWidth: 2,
             }
         });
-        node.shapeId = shape.id;
+        node.shapeId = shapeWidget.id;
 
         // Add children to the queue
         for (const childId of node.children) {
