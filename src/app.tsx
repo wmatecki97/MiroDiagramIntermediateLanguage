@@ -36,28 +36,24 @@ async function processPseudoCode(input: string) {
         const match = line.match(/^Node:(\d+):"(.+)"$/);
         if (match) {
           const [, id, content] = match;
-          const shapeStyle: ShapeStyle = {
-            color: '#000000', // Default text color
-            fillColor: '#ffffff',
-            fillOpacity: 1,
-            fontFamily: 'Arial',
-            fontSize: 14,
-            textAlign: 'center',
-            textAlignVertical: 'middle',
-            borderStyle: 'solid',
-            borderOpacity: 1,
-            borderColor: '#008080',
-            borderWidth: 2,
-            borderRadius: 10,
-          };
           const shape = await miro.board.createShape({
-            shape: 'rectangle',
+            shape: 'round_rectangle',
             content: content,
             x: currentX,
             y: startY,
             width: 200,
             height: 100,
-            style: shapeStyle,
+            style: {
+              color: '#000000', // Default text color
+              fillColor: '#ffffff',
+              fillOpacity: 1,
+              fontSize: 14,
+              textAlign: 'center',
+              textAlignVertical: 'middle',
+              borderOpacity: 1,
+              borderColor: '#008080',
+              borderWidth: 2,
+            }
           });
           nodes[id] = shape.id; // Store the ID of the created shape
           currentX += xSpacing; // Move to the right for the next node
