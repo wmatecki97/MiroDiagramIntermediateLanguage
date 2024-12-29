@@ -6,6 +6,7 @@ import { processPseudoCode } from './diagram-processor';
 const App: React.FC = () => {
   const [pseudoCode, setPseudoCode] = React.useState('');
   const [diagramYOffset, setDiagramYOffset] = React.useState(0);
+    const [diagramXOffset, setDiagramXOffset] = React.useState(0);
   const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('tree');
   const [nodeWidth, setNodeWidth] = React.useState(200);
   const [nodeHeight, setNodeHeight] = React.useState(100);
@@ -14,17 +15,28 @@ const App: React.FC = () => {
   const [horizontalSpacing, setHorizontalSpacing] = React.useState(0.5);
   const [verticalSpacing, setVerticalSpacing] = React.useState(1.5);
 
-  const handleGenerate = async () => {
-    const yOffset = await processPseudoCode(pseudoCode, {
-      startY: 100 + diagramYOffset,
-      orientation: orientation,
-      nodeWidth: nodeWidth,
-      nodeHeight: nodeHeight,
-      borderColor: borderColor,
-      textColor: textColor,
-    });
-    setDiagramYOffset(diagramYOffset + yOffset);
-  };
+    const handleGenerate = async () => {
+        const { yOffset, bounds } = await processPseudoCode(pseudoCode, {
+            startY: 100 + diagramYOffset,
+            orientation: orientation,
+            nodeWidth: nodeWidth,
+            nodeHeight: nodeHeight,
+            borderColor: borderColor,
+            textColor: textColor,
+        });
+
+        if (orientation === 'horizontal') {
+            setDiagramXOffset(diagramXOffset + bounds.maxX);
+            setDiagramYOffset(diagramYOffset);
+        } else if (orientation === 'vertical') {
+            setDiagramYOffset(diagramYOffset + bounds.maxY);
+            setDiagramXOffset(diagramXOffset);
+        } else {
+            setDiagramYOffset(diagramYOffset + yOffset);
+            setDiagramXOffset(diagramXOffset);
+        }
+    };
+
 
   return (
     <div className="grid wrapper">

@@ -33,6 +33,14 @@ interface ProcessPseudoCodeOptions {
     shape?: ShapeType;
 }
 
+interface DiagramBounds {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+}
+
+
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
     const {
         orientation = 'tree',
@@ -139,6 +147,11 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
     // Process nodes in breadth-first order
     let horizontalIndex = 0;
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
     while (queue.length > 0) {
         const nodeId = queue.shift()!;
         if (visitedNodes.has(nodeId)) continue;
@@ -184,6 +197,10 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         }
 
         nodePositions[nodeId] = { x, y };
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x + nodeWidth);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y + nodeHeight);
 
         const shapeWidget = await miro.board.createShape({
             shape: node.shape,
@@ -231,5 +248,12 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
     }
 
     currentY = (orientation === 'tree' ? (maxDepth + 1) * ySpacing : (orientation === 'vertical' ? currentY - startY + ySpacing : 0));
-    return currentY;
+    
+    const bounds: DiagramBounds = {
+        minX: minX === Infinity ? 0 : minX,
+        maxX: maxX === -Infinity ? 0 : maxX,
+        minY: minY === Infinity ? 0 : minY,
+        maxY: maxY === -Infinity ? 0 : maxY,
+    };
+    return {yOffset: currentY, bounds};
 }
