@@ -12,72 +12,96 @@ const App: React.FC = () => {
   const [textColor, setTextColor] = React.useState('#000000');
   const [horizontalSpacing, setHorizontalSpacing] = React.useState(0.5);
   const [verticalSpacing, setVerticalSpacing] = React.useState(1.5);
-    const [minX, setMinX] = React.useState(Infinity);
-    const [maxX, setMaxX] = React.useState(-Infinity);
-    const [minY, setMinY] = React.useState(Infinity);
-    const [maxY, setMaxY] = React.useState(-Infinity);
+  const [minX, setMinX] = React.useState(Infinity);
+  const [maxX, setMaxX] = React.useState(-Infinity);
+  const [minY, setMinY] = React.useState(Infinity);
+  const [maxY, setMaxY] = React.useState(-Infinity);
 
-    const handleGenerate = async () => {
-        let startX = 0;
-        let startY = 100;
+  const handleGenerate = async () => {
+    let startX = 0;
+    let startY = 100;
 
-        if (minX !== Infinity && maxX !== -Infinity && minY !== Infinity && maxY !== -Infinity) {
-            if (orientation === 'horizontal') {
-                startX = maxX;
-                startY = minY;
-            } else if (orientation === 'vertical') {
-                startX = minX;
-                startY = maxY;
-            } else {
-                startX = minX;
-                startY = maxX;
-            }
-        }
+    if (minX !== Infinity && maxX !== -Infinity && minY !== Infinity && maxY !== -Infinity) {
+      if (orientation === 'horizontal') {
+        startX = maxX;
+        startY = minY;
+      } else if (orientation === 'vertical') {
+        startX = minX;
+        startY = maxY;
+      } else {
+        startX = minX;
+        startY = maxX;
+      }
+    }
 
-        await processPseudoCode(pseudoCode, {
-            startX: startX,
-            startY: startY,
-            orientation: orientation,
-            nodeWidth: nodeWidth,
-            nodeHeight: nodeHeight,
-            borderColor: borderColor,
-            textColor: textColor,
-            minX: minX,
-            maxX: maxX,
-            minY: minY,
-            maxY: maxY,
-        });
-        
-        setMinX(Infinity);
-        setMaxX(-Infinity);
-        setMinY(Infinity);
-        setMaxY(-Infinity);
-    };
+    await processPseudoCode(pseudoCode, {
+      startX: startX,
+      startY: startY,
+      orientation: orientation,
+      nodeWidth: nodeWidth,
+      nodeHeight: nodeHeight,
+      borderColor: borderColor,
+      textColor: textColor,
+      minX: minX,
+      maxX: maxX,
+      minY: minY,
+      maxY: maxY,
+    });
+
+    setMinX(Infinity);
+    setMaxX(-Infinity);
+    setMinY(Infinity);
+    setMaxY(-Infinity);
+  };
 
 
   return (
     <div className="grid wrapper">
       <div className="cs1 ce12">
         <h1>Diagram Generator</h1>
-        <p>
-          Enter pseudo-code to generate a diagram. Use the following syntax:
-          <br />
-          <code>Node:&lt;NodeID&gt;[&lt;shape=ShapeType,backgroundColor=Color,borderColor=Color,textColor=Color&gt;]:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
-          <br />
-          <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
-          <br />
-          Shape types: <code>circle</code>, <code>triangle</code>, <code>rectangle</code>, <code>wedge_round_rectangle_callout</code>, <code>round_rectangle</code>, <code>rhombus</code>, <code>parallelogram</code>, <code>star</code>, <code>right_arrow</code>, <code>left_arrow</code>, <code>pentagon</code>, <code>hexagon</code>, <code>octagon</code>, <code>trapezoid</code>, <code>flow_chart_predefined_process</code>, <code>left_right_arrow</code>, <code>cloud</code>, <code>left_brace</code>, <code>right_brace</code>, <code>cross</code>, <code>can</code>
-          <br />
-          Colors must be in the format #000000.
-          <br />
-          For example:
-          <br />
-          <code>Node:1:"Start"</code>
-          <br />
-          <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"</code>
-          <br />
-          <code>Connect:1:2</code>
-        </p>
+        <h1>Diagram Generator Syntax</h1>
+
+        <p>This document describes the syntax for generating diagrams using a simple pseudo-code.</p>
+
+        <h2>Node Creation</h2>
+
+        <p>Use the following format to create a node:</p>
+        <pre><code>Node:NodeID&lt;attributes&gt;:TextContent</code></pre>
+
+        <ul>
+          <li><code>NodeID</code>: An integer representing the unique identifier for the node.</li>
+          <li><code>attributes</code>: A comma-separated list of key-value pairs enclosed in double angle brackets: <code>&lt;&lt;key1=value1,key2=value2,...&gt;&gt;</code>. Supported attributes include:
+            <ul>
+              <li><code>shape</code>: Node shape (e.g., <code>circle</code>, <code>rectangle</code>, <code>triangle</code>, <code>cloud</code>, <code>left_brace</code>, etc.).</li>
+              <li><code>backgroundColor</code>: Background color in hexadecimal format (e.g., <code>#00FF00</code>).</li>
+              <li><code>borderColor</code>: Border color in hexadecimal format (e.g., <code>#0000FF</code>).</li>
+              <li><code>textColor</code>: Text color in hexadecimal format (e.g., <code>#FFFFFF</code>).</li>
+            </ul>
+          </li>
+          <li><code>TextContent</code>: The text displayed inside the node, enclosed in double quotes: <code>"TextContent"</code>.</li>
+        </ul>
+
+        <h2>Connection Creation</h2>
+
+        <p>Use the following format to create a connection between two nodes:</p>
+        <pre><code>Connect:FromNodeID:ToNodeID</code></pre>
+
+        <ul>
+          <li><code>FromNodeID</code>: The <code>NodeID</code> of the starting node.</li>
+          <li><code>ToNodeID</code>: The <code>NodeID</code> of the ending node.</li>
+        </ul>
+
+        <h2>Example</h2>
+
+        <div className="example">
+          <p>Here's an example demonstrating node and connection creation:</p>
+          <pre><code>Node:1&lt;shape=circle, backgroundColor=#00FF00,&gt;:"Start"<br />
+            Node:2:&lt;shape=rectangle, borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"<br />
+            Connect:1:2</code></pre>
+        </div>
+
+
+
         <div style={{ marginBottom: '10px' }}>
           <div style={{ marginBottom: '5px' }}>
             <label htmlFor="orientation">Diagram Orientation:</label>

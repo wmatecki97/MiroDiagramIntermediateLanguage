@@ -1,4 +1,4 @@
-## Presentationdiagramdesigner
+## MiroIntermediateLanguageDiagramDesigner
 
 **&nbsp;ℹ&nbsp;Note**:
 
