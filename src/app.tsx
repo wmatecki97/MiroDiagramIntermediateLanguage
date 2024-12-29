@@ -26,10 +26,10 @@ const App: React.FC = () => {
         });
 
         if (orientation === 'horizontal') {
-            setDiagramXOffset(diagramXOffset + bounds.maxX);
+            setDiagramXOffset(diagramXOffset + (bounds.maxX - bounds.minX));
             setDiagramYOffset(diagramYOffset);
         } else if (orientation === 'vertical') {
-            setDiagramYOffset(diagramYOffset + bounds.maxY);
+            setDiagramYOffset(diagramYOffset + (bounds.maxY - bounds.minY));
             setDiagramXOffset(diagramXOffset);
         } else {
             setDiagramYOffset(diagramYOffset + yOffset);
