@@ -102,6 +102,21 @@ const App: React.FC = () => {
     <div className="grid wrapper">
       <div className="cs1 ce12">
         <h1>Diagram Generator</h1>
+        <p>
+          Enter pseudo-code to generate a diagram. Use the following syntax:
+          <br />
+          <code>Node:&lt;NodeID&gt;:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
+          <br />
+          <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
+          <br />
+          For example:
+          <br />
+          <code>Node:1:"Start"</code>
+          <br />
+          <code>Node:2:"End"</code>
+          <br />
+          <code>Connect:1:2</code>
+        </p>
         <textarea
           placeholder="Enter pseudo-code here"
           value={pseudoCode}
