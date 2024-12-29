@@ -21,8 +21,6 @@ const App: React.FC = () => {
       nodeWidth: nodeWidth,
       nodeHeight: nodeHeight,
       borderColor: borderColor,
-      horizontalSpacing: horizontalSpacing,
-      verticalSpacing: verticalSpacing,
       textColor: textColor,
     });
     setDiagramYOffset(diagramYOffset + yOffset);
@@ -38,14 +36,14 @@ const App: React.FC = () => {
           <code>Node:&lt;NodeID&gt;[&lt;shape=ShapeType,backgroundColor=Color,borderColor=Color,textColor=Color&gt;]:&quot;&lt;TextContent&gt;&quot;</code> to create a node.
           <br />
           <code>Connect:&lt;FromNodeID&gt;:&lt;ToNodeID&gt;</code> to connect two nodes.
-            <br />
-            Shape types: <code>circle</code>, <code>triangle</code>, <code>rectangle</code>, <code>wedge_round_rectangle_callout</code>, <code>round_rectangle</code>, <code>rhombus</code>, <code>parallelogram</code>, <code>star</code>, <code>right_arrow</code>, <code>left_arrow</code>, <code>pentagon</code>, <code>hexagon</code>, <code>octagon</code>, <code>trapezoid</code>, <code>flow_chart_predefined_process</code>, <code>left_right_arrow</code>, <code>cloud</code>, <code>left_brace</code>, <code>right_brace</code>, <code>cross</code>, <code>can</code>
+          <br />
+          Shape types: <code>circle</code>, <code>triangle</code>, <code>rectangle</code>, <code>wedge_round_rectangle_callout</code>, <code>round_rectangle</code>, <code>rhombus</code>, <code>parallelogram</code>, <code>star</code>, <code>right_arrow</code>, <code>left_arrow</code>, <code>pentagon</code>, <code>hexagon</code>, <code>octagon</code>, <code>trapezoid</code>, <code>flow_chart_predefined_process</code>, <code>left_right_arrow</code>, <code>cloud</code>, <code>left_brace</code>, <code>right_brace</code>, <code>cross</code>, <code>can</code>
           <br />
           For example:
           <br />
           <code>Node:1:"Start"</code>
           <br />
-            <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"</code>
+          <code>Node:2&lt;shape=rectangle,backgroundColor=#00FF00,borderColor=#0000FF,textColor=#FFFFFF&gt;:"End"</code>
           <br />
           <code>Connect:1:2</code>
         </p>
@@ -95,7 +93,7 @@ const App: React.FC = () => {
           </div>
           <div style={{ marginBottom: '5px' }}>
             <label htmlFor="textColor">Text Color:</label>
-             <input
+            <input
               type="color"
               id="textColor"
               value={textColor}
