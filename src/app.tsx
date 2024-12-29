@@ -1,10 +1,28 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-
+import { Shape } from '@mirohq/websdk-types/stable/features/widgets/shape';
 import '../src/assets/style.css';
+
+// Define the ShapeStyle type
+type ShapeStyle = {
+  color: string;
+  fillColor: string;
+  fillOpacity: number;
+  fontFamily: string;
+  fontSize: number;
+  textAlign: string;
+  textAlignVertical: string;
+  borderStyle: string;
+  borderOpacity: number;
+  borderColor: string;
+  borderWidth: number;
+  borderRadius?: number;
+};
+
+
 async function processPseudoCode(input: string) {
   const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
-  const nodes = {};
+  const nodes: { [key: string]: string } = {};
 
   let currentX = 0; // Starting X position
   const startY = 100; // Starting Y position
@@ -18,6 +36,20 @@ async function processPseudoCode(input: string) {
         const match = line.match(/^Node:(\d+):"(.+)"$/);
         if (match) {
           const [, id, content] = match;
+          const shapeStyle: ShapeStyle = {
+            color: '#000000', // Default text color
+            fillColor: '#ffffff',
+            fillOpacity: 1,
+            fontFamily: 'Arial',
+            fontSize: 14,
+            textAlign: 'center',
+            textAlignVertical: 'middle',
+            borderStyle: 'solid',
+            borderOpacity: 1,
+            borderColor: '#008080',
+            borderWidth: 2,
+            borderRadius: 10,
+          };
           const shape = await miro.board.createShape({
             shape: 'rectangle',
             content: content,
@@ -25,12 +57,7 @@ async function processPseudoCode(input: string) {
             y: startY,
             width: 200,
             height: 100,
-            style: {
-              fillColor: '#ffffff',
-              borderColor: '#008080',
-              borderWidth: 2,
-              borderRadius: 10,
-            }
+            style: shapeStyle,
           });
           nodes[id] = shape.id; // Store the ID of the created shape
           currentX += xSpacing; // Move to the right for the next node
