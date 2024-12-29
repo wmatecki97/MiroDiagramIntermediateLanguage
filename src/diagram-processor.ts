@@ -31,17 +31,13 @@ interface ProcessPseudoCodeOptions {
     horizontalSpacing?: number;
     verticalSpacing?: number;
     shape?: ShapeType;
-}
-
-interface DiagramBounds {
     minX: number;
     maxX: number;
     minY: number;
     maxY: number;
 }
 
-
-export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
+export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions) {
     const {
         orientation = 'tree',
         startY = 100,
@@ -54,6 +50,10 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         horizontalSpacing = 2.5,
         verticalSpacing = 1.5,
         shape = 'round_rectangle',
+        minX: initialMinX,
+        maxX: initialMaxX,
+        minY: initialMinY,
+        maxY: initialMaxY,
     } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
     const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string, shape: ShapeType, color: string, fillColor: string, textColor: string }>();
@@ -147,10 +147,10 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
     // Process nodes in breadth-first order
     let horizontalIndex = 0;
-    let minX = Infinity;
-    let maxX = -Infinity;
-    let minY = Infinity;
-    let maxY = -Infinity;
+    let minX = initialMinX;
+    let maxX = initialMaxX;
+    let minY = initialMinY;
+    let maxY = initialMaxY;
     let horizontalMaxX = -Infinity;
 
     while (queue.length > 0) {
@@ -248,14 +248,11 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
             });
         }
     }
-
+    
     currentY = (orientation === 'tree' ? (maxDepth + 1) * ySpacing : (orientation === 'vertical' ? currentY - startY + ySpacing : 0));
     
-    const bounds: DiagramBounds = {
-        minX: minX === Infinity ? 0 : minX,
-        maxX: orientation === 'horizontal' ? horizontalMaxX : maxX === -Infinity ? 0 : maxX,
-        minY: minY === Infinity ? 0 : minY,
-        maxY: maxY === -Infinity ? 0 : maxY,
-    };
-    return {yOffset: currentY, bounds};
+    options.minX = minX;
+    options.maxX = maxX;
+    options.minY = minY;
+    options.maxY = maxY;
 }

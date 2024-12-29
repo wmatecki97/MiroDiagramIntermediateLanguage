@@ -5,8 +5,6 @@ import { processPseudoCode } from './diagram-processor';
 
 const App: React.FC = () => {
   const [pseudoCode, setPseudoCode] = React.useState('');
-  const [diagramYOffset, setDiagramYOffset] = React.useState(0);
-    const [diagramXOffset, setDiagramXOffset] = React.useState(0);
   const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical' | 'tree'>('tree');
   const [nodeWidth, setNodeWidth] = React.useState(200);
   const [nodeHeight, setNodeHeight] = React.useState(100);
@@ -14,27 +12,45 @@ const App: React.FC = () => {
   const [textColor, setTextColor] = React.useState('#000000');
   const [horizontalSpacing, setHorizontalSpacing] = React.useState(0.5);
   const [verticalSpacing, setVerticalSpacing] = React.useState(1.5);
+    const [minX, setMinX] = React.useState(Infinity);
+    const [maxX, setMaxX] = React.useState(-Infinity);
+    const [minY, setMinY] = React.useState(Infinity);
+    const [maxY, setMaxY] = React.useState(-Infinity);
 
     const handleGenerate = async () => {
-        const { yOffset, bounds } = await processPseudoCode(pseudoCode, {
-            startY: 100 + diagramYOffset,
+        let startX = 0;
+        let startY = 100;
+
+        if (minX !== Infinity && maxX !== -Infinity && minY !== Infinity && maxY !== -Infinity) {
+            if (orientation === 'horizontal') {
+                startX = maxX;
+                startY = minY;
+            } else if (orientation === 'vertical') {
+                startX = minX;
+                startY = maxY;
+            } else {
+                startX = minX;
+                startY = maxY;
+            }
+        }
+
+        await processPseudoCode(pseudoCode, {
+            startY: startY,
             orientation: orientation,
             nodeWidth: nodeWidth,
             nodeHeight: nodeHeight,
             borderColor: borderColor,
             textColor: textColor,
+            minX: minX,
+            maxX: maxX,
+            minY: minY,
+            maxY: maxY,
         });
-
-        if (orientation === 'horizontal') {
-            setDiagramXOffset(diagramXOffset + (bounds.maxX - bounds.minX));
-            setDiagramYOffset(diagramYOffset);
-        } else if (orientation === 'vertical') {
-            setDiagramYOffset(diagramYOffset + (bounds.maxY - bounds.minY));
-            setDiagramXOffset(diagramXOffset);
-        } else {
-            setDiagramYOffset(diagramYOffset + yOffset);
-            setDiagramXOffset(diagramXOffset);
-        }
+        
+        setMinX(Infinity);
+        setMaxX(-Infinity);
+        setMinY(Infinity);
+        setMaxY(-Infinity);
     };
 
 
