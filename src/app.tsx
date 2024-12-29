@@ -10,6 +10,7 @@ const App: React.FC = () => {
     const [nodeWidth, setNodeWidth] = React.useState(200);
     const [nodeHeight, setNodeHeight] = React.useState(100);
     const [nodeColor, setNodeColor] = React.useState('#008080');
+    const [horizontalSpacing, setHorizontalSpacing] = React.useState(2.5);
 
   const handleGenerate = async () => {
     const yOffset = await processPseudoCode(pseudoCode, {
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         nodeWidth: nodeWidth,
         nodeHeight: nodeHeight,
         borderColor: nodeColor,
+        horizontalSpacing: horizontalSpacing,
     });
     setDiagramYOffset(diagramYOffset + yOffset);
   };
@@ -82,6 +84,16 @@ const App: React.FC = () => {
                       id="nodeColor"
                       value={nodeColor}
                       onChange={(e) => setNodeColor(e.target.value)}
+                      style={{ display: 'block' }}
+                  />
+              </div>
+              <div>
+                  <label htmlFor="horizontalSpacing">Horizontal Spacing:</label>
+                  <input
+                      type="number"
+                      id="horizontalSpacing"
+                      value={horizontalSpacing}
+                      onChange={(e) => setHorizontalSpacing(Number(e.target.value))}
                       style={{ display: 'block' }}
                   />
               </div>
