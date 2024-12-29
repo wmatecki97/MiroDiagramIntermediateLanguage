@@ -120,7 +120,21 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
 
         if (orientation === 'horizontal') {
             // Horizontal layout logic
-            x = visitedNodes.size * xSpacing;
+            const depth = nodeDepths[nodeId] || 0;
+            const siblings = nodes.get(node.parent || '')?.children.length || 1;
+             if (node.parent) {
+                const parentNode = nodes.get(node.parent);
+                if (parentNode) {
+                    const parentDepth = nodeDepths[node.parent] || 0;
+                    const parentX = nodePositions[node.parent]?.x || 0;
+                    const parentY = nodePositions[node.parent]?.y || startY;
+                    const childIndex = parentNode.children.indexOf(nodeId);
+                    x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing;
+                    y = parentY;
+                }
+            } else {
+                x = depth * xSpacing;
+            }
         } else if (orientation === 'vertical') {
             // Vertical layout logic
             y = currentY + (visitedNodes.size - 1) * ySpacing;
