@@ -128,7 +128,13 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     const parentDepth = nodeDepths[node.parent] || 0;
                     const parentX = nodePositions[node.parent]?.x || 0;
                     const parentY = nodePositions[node.parent]?.y || startY;
-                    const childIndex = parentNode.children.indexOf(nodeId);
+                    let childIndex = 0;
+                    for (let i = 0; i < parentNode.children.length; i++) {
+                        if (parentNode.children[i] === nodeId) {
+                            childIndex = i;
+                            break;
+                        }
+                    }
                     x = parentX + (childIndex * (nodeWidth + xSpacing));
                     y = parentY + (depth * ySpacing); // Adjusted y position for horizontal layout
                 }
@@ -150,8 +156,13 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
                     const parentDepth = nodeDepths[node.parent] || 0;
                     const parentX = nodePositions[node.parent]?.x || 0;
                     const parentY = nodePositions[node.parent]?.y || startY;
-                    const childIndex = parentNode.children.indexOf(nodeId);
-                    console.log(childIndex);
+                    let childIndex = 0;
+                    for (let i = 0; i < parentNode.children.length; i++) {
+                        if (parentNode.children[i] === nodeId) {
+                            childIndex = i;
+                            break;
+                        }
+                    }
                     x = parentX + (childIndex - (siblings - 1) / 2) * xSpacing / 2;
                     y = parentY + ySpacing;
                 }
