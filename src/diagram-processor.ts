@@ -28,6 +28,7 @@ interface ProcessPseudoCodeOptions {
     fillColor?: string;
     borderColor?: string;
     horizontalSpacing?: number;
+    verticalSpacing?: number;
 }
 
 export async function processPseudoCode(input: string, options: ProcessPseudoCodeOptions = {}) {
@@ -41,12 +42,13 @@ export async function processPseudoCode(input: string, options: ProcessPseudoCod
         fillColor = '#ffffff',
         borderColor = '#008080',
         horizontalSpacing = 2.5,
+        verticalSpacing = 1.5,
     } = options;
     const lines = input.split('\n').map(line => line.trim()).filter(Boolean);
     const nodes = new Map<string, { id: string, content: string, children: string[], parent: string | null, shapeId?: string }>();
     const connections: { from: string, to: string }[] = [];
     const xSpacing = nodeWidth * horizontalSpacing;
-    const ySpacing = nodeHeight * 1.5;
+    const ySpacing = nodeHeight * verticalSpacing;
     let currentY = startY;
 
     // Parse nodes and connections

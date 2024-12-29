@@ -11,6 +11,7 @@ const App: React.FC = () => {
     const [nodeHeight, setNodeHeight] = React.useState(100);
     const [nodeColor, setNodeColor] = React.useState('#008080');
     const [horizontalSpacing, setHorizontalSpacing] = React.useState(2.5);
+    const [verticalSpacing, setVerticalSpacing] = React.useState(1.5);
 
   const handleGenerate = async () => {
     const yOffset = await processPseudoCode(pseudoCode, {
@@ -20,6 +21,7 @@ const App: React.FC = () => {
         nodeHeight: nodeHeight,
         borderColor: nodeColor,
         horizontalSpacing: horizontalSpacing,
+        verticalSpacing: verticalSpacing,
     });
     setDiagramYOffset(diagramYOffset + yOffset);
   };
@@ -97,6 +99,16 @@ const App: React.FC = () => {
                       style={{ display: 'block' }}
                   />
               </div>
+                <div>
+                    <label htmlFor="verticalSpacing">Vertical Spacing:</label>
+                    <input
+                        type="number"
+                        id="verticalSpacing"
+                        value={verticalSpacing}
+                        onChange={(e) => setVerticalSpacing(Number(e.target.value))}
+                        style={{ display: 'block' }}
+                    />
+                </div>
           </div>
         <textarea
           placeholder="Enter pseudo-code here"
